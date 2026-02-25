@@ -1,42 +1,122 @@
-# Stachine
+# @dldc/css-builder
 
-> A TypeScript state machine with events and effects
+> A utility for building CSS expressions like `calc`, `clamp`, etc.
 
+## Installation
+
+```bash
+deno add @dldc/css-builder
 ```
-deno add @dldc/stachine
+
+## Usage
+
+This library provides builder functions to construct CSS math expressions and a
+`serialize` function to convert them to CSS strings.
+
+```typescript
+import { add, clamp, multiply, serialize } from "@dldc/css-builder";
+
+// Build a calc expression
+const result = add("10px", multiply(2, "5px"));
+serialize(result); // "calc(10px + 2*5px)"
+
+// Build a clamp expression
+const responsive = clamp("10px", "5vw", "100px");
+serialize(responsive); // "clamp(10px,5vw,100px)"
 ```
 
-## Gist
+## API
 
-```ts
-import { createStachine } from "@dldc/stachine";
+### Builder Functions
 
-type State = { state: "Home" } | { state: "Bed" } | { state: "Work" } | {
-  state: "Error";
-};
-type Action = { action: "Commute" } | { action: "Wake" } | { action: "Sleep" };
+All builder functions accept numbers, strings (like `"10px"`, `"50%"`,
+`"var(--size)"`), or other expressions.
 
-const machine = createStachine<State, Action>({
-  initialState: { state: "Home" },
-  createErrorState: () => ({ state: "Error" }),
-  states: {
-    Home: {
-      actions: {
-        Commute: () => ({ state: "Work" }),
-        Sleep: () => ({ state: "Bed" }),
-      },
-    },
-    Work: {
-      actions: {
-        Commute: () => ({ state: "Home" }),
-      },
-    },
-    Bed: {
-      actions: {
-        Wake: () => ({ state: "Home" }),
-      },
-    },
-    Error: {},
-  },
-});
+#### `add(...values)`
+
+Creates a `calc()` addition expression.
+
+```typescript
+serialize(add(10, 20, 30)); // "calc(10 + 20 + 30)"
+serialize(add("10px", "2rem")); // "calc(10px + 2rem)"
+```
+
+#### `substract(...values)`
+
+Creates a `calc()` subtraction expression.
+
+```typescript
+serialize(substract(100, 20, 10)); // "calc(100 - 20 - 10)"
+serialize(substract("100%", "20px")); // "calc(100% - 20px)"
+```
+
+#### `multiply(...values)`
+
+Creates a `calc()` multiplication expression.
+
+```typescript
+serialize(multiply(2, 3, 4)); // "calc(2*3*4)"
+serialize(multiply("10px", 2)); // "calc(10px*2)"
+```
+
+#### `divide(...values)`
+
+Creates a `calc()` division expression.
+
+```typescript
+serialize(divide(100, 2, 5)); // "calc(100/2/5)"
+serialize(divide("100%", 3)); // "calc(100%/3)"
+```
+
+#### `min(...values)`
+
+Creates a `min()` expression.
+
+```typescript
+serialize(min(10, "20px", "50%")); // "min(10,20px,50%)"
+```
+
+#### `max(...values)`
+
+Creates a `max()` expression.
+
+```typescript
+serialize(max(10, "20px", "50%")); // "max(10,20px,50%)"
+```
+
+#### `clamp(min, preferred, max)`
+
+Creates a `clamp()` expression. Use `"none"` for unbounded min or max.
+
+```typescript
+serialize(clamp(10, "50%", "100px")); // "clamp(10,50%,100px)"
+serialize(clamp("none", "50%", "none")); // "clamp(none,50%,none)"
+```
+
+#### `exp(value)`
+
+Creates an `exp()` expression.
+
+```typescript
+serialize(exp(2)); // "exp(2)"
+serialize(exp("2.5")); // "exp(2.5)"
+```
+
+### Composing Expressions
+
+Builder functions can be composed together:
+
+```typescript
+const result = add("10px", multiply(2, "5vw"), clamp(0, "20%", "50px"));
+serialize(result);
+// "calc(10px + 2*5vw + clamp(0,20%,50px))"
+```
+
+### `serialize(expression)`
+
+Converts an expression to a CSS string.
+
+```typescript
+const expr = multiply(add(10, 20), 2);
+const css = serialize(expr); // "calc((10 + 20)*2)"
 ```
