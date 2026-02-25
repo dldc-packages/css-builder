@@ -179,6 +179,50 @@ export function exp(item: AnyMaybeExpression): Ast.Exp {
   return create.exp(anyExprToCalcSum(item as AnyExpression));
 }
 
+export function round(
+  strategy: Ast.RoundStrategy | null,
+  value: AnyExpression,
+  interval?: AnyExpression,
+): Ast.Round {
+  if (value == null) {
+    throw new Error("Expected at least one item.");
+  }
+
+  return create.round(
+    strategy,
+    anyExprToCalcSum(value),
+    interval ? anyExprToCalcSum(interval) : undefined,
+  );
+}
+
+export function roundNearest(
+  value: AnyExpression,
+  interval?: AnyExpression,
+): Ast.Round {
+  return round("nearest", value, interval);
+}
+
+export function roundUp(
+  value: AnyExpression,
+  interval?: AnyExpression,
+): Ast.Round {
+  return round("up", value, interval);
+}
+
+export function roundDown(
+  value: AnyExpression,
+  interval?: AnyExpression,
+): Ast.Round {
+  return round("down", value, interval);
+}
+
+export function roundToZero(
+  value: AnyExpression,
+  interval?: AnyExpression,
+): Ast.Round {
+  return round("to-zero", value, interval);
+}
+
 export function value(value: string | number): Ast.CalcValue {
   if (typeof value === "number") {
     return create.calcValue.number(value);

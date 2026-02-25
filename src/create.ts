@@ -78,6 +78,29 @@ export function exp(sum: Ast.CalcSum): Ast.Exp {
   };
 }
 
+export function round(
+  strategy: Ast.RoundStrategy | null,
+  value: Ast.CalcSum,
+  interval?: Ast.CalcSum,
+): Ast.Round {
+  return {
+    kind: "round",
+    value: [
+      { kind: "function", value: "round" },
+      { kind: "token", value: "(" },
+      strategy
+        ? ([{ kind: "rounding-strategy", value: strategy }, {
+          kind: "token",
+          value: ",",
+        }] as const)
+        : null,
+      value,
+      interval ? ([{ kind: "token", value: "," }, interval] as const) : null,
+      { kind: "token", value: ")" },
+    ],
+  };
+}
+
 export function clacSum(
   first: Ast.CalcProduct,
   ...products: readonly ["+" | "-", Ast.CalcProduct][]

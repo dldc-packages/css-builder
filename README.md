@@ -102,6 +102,26 @@ serialize(exp(2)); // "exp(2)"
 serialize(exp("2.5")); // "exp(2.5)"
 ```
 
+#### `round(...)`
+
+Creates a `round()` expression. You can pass a rounding strategy as the first
+argument or omit it to use the default `nearest` strategy.
+
+```typescript
+serialize(round(null, "var(--width)", "50px")); // "round(var(--width),50px)"
+serialize(round("up", "101px", "var(--interval)")); // "round(up,101px,var(--interval))"
+serialize(round("down", "10.5px")); // "round(down,10.5px)"
+```
+
+Convenience helpers are also available:
+
+```typescript
+serialize(roundNearest("2.4px", "1px")); // "round(nearest,2.4px,1px)"
+serialize(roundUp("101px", "5px")); // "round(up,101px,5px)"
+serialize(roundDown("var(--height)", "8px")); // "round(down,var(--height),8px)"
+serialize(roundToZero("-105px", 10)); // "round(to-zero,-105px,10)"
+```
+
 ### Composing Expressions
 
 Builder functions can be composed together:

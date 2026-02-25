@@ -286,6 +286,29 @@ Deno.test("exp", async (t) => {
   });
 });
 
+Deno.test("round", async (t) => {
+  await t.step("wraps value with default strategy", () => {
+    const value = create.calcValue.var("--width");
+    const interval = create.calcValue.dimension(50, "px");
+    const result = create.round(null, value, interval);
+    expect(result.kind).toBe("round");
+    expect(serialize(result)).toBe("round(var(--width),50px)");
+  });
+
+  await t.step("wraps value with strategy", () => {
+    const value = create.calcValue.dimension(101, "px");
+    const interval = create.calcValue.var("--interval");
+    const result = create.round("up", value, interval);
+    expect(serialize(result)).toBe("round(up,101px,var(--interval))");
+  });
+
+  await t.step("wraps value without interval", () => {
+    const value = create.calcValue.dimension(12, "px");
+    const result = create.round("down", value);
+    expect(serialize(result)).toBe("round(down,12px)");
+  });
+});
+
 Deno.test("min", async (t) => {
   await t.step("creates min with two values", () => {
     const result = create.min(
@@ -492,6 +515,22 @@ Deno.test("math functions as CalcValue", async (t) => {
     ]);
     const result = create.calc(product);
     expect(serialize(result)).toBe("calc(exp(2 + 1)*3)");
+  });
+
+  await t.step("round inside calc sum", () => {
+    const roundValue = create.round(
+      "nearest",
+      create.calcValue.var("--width"),
+      create.calcValue.dimension(50, "px"),
+    );
+    const sum = create.clacSum(roundValue, [
+      "+",
+      create.calcValue.dimension(10, "px"),
+    ]);
+    const result = create.calc(sum);
+    expect(serialize(result)).toBe(
+      "calc(round(nearest,var(--width),50px) + 10px)",
+    );
   });
 
   await t.step("min and max combined in sum", () => {

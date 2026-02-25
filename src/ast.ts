@@ -76,6 +76,27 @@ export type Exp = {
   ];
 };
 
+export type RoundStrategy = "nearest" | "up" | "down" | "to-zero";
+
+export type Round = {
+  readonly kind: "round";
+  readonly value: [
+    { readonly kind: "function"; readonly value: "round" },
+    { readonly kind: "token"; readonly value: "(" },
+    Syntax_QuestionMark<
+      readonly [
+        { readonly kind: "rounding-strategy"; readonly value: RoundStrategy },
+        { readonly kind: "token"; readonly value: "," },
+      ]
+    >,
+    CalcSum,
+    Syntax_QuestionMark<
+      readonly [{ readonly kind: "token"; readonly value: "," }, CalcSum]
+    >,
+    { readonly kind: "token"; readonly value: ")" },
+  ];
+};
+
 export type CalcSum =
   | CalcProduct
   | {
@@ -140,6 +161,7 @@ export type CalcValue =
   | Clamp
   | Calc
   | Exp
+  | Round
   | Var;
 
 export type CalcKeyword = "e" | "pi" | "infinity" | "-infinity" | "NaN";

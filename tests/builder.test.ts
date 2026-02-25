@@ -242,6 +242,46 @@ Deno.test("exp", async (t) => {
   });
 });
 
+Deno.test("round", async (t) => {
+  await t.step("throws for missing value", () => {
+    expect(() => builder.round(null, undefined as never)).toThrow(
+      "Expected at least one item.",
+    );
+  });
+
+  await t.step("rounds with default strategy", () => {
+    const result = builder.round(null, "var(--width)", "50px");
+    expect(serialize(result)).toBe("round(var(--width),50px)");
+  });
+
+  await t.step("rounds with explicit strategy", () => {
+    const result = builder.round("up", "101px", "var(--interval)");
+    expect(serialize(result)).toBe("round(up,101px,var(--interval))");
+  });
+
+  await t.step("rounds with to-zero strategy", () => {
+    const result = builder.roundToZero("-105px", 10);
+    expect(serialize(result)).toBe("round(to-zero,-105px,10)");
+  });
+
+  await t.step("unwraps calc values", () => {
+    const calcValue = create.calc(
+      create.clacSum(create.calcValue.number(2), [
+        "+",
+        create.calcValue.number(1),
+      ]),
+    );
+    const calcInterval = create.calc(
+      create.clacSum(create.calcValue.number(3), [
+        "-",
+        create.calcValue.number(1),
+      ]),
+    );
+    const result = builder.round("nearest", calcValue, calcInterval);
+    expect(serialize(result)).toBe("round(nearest,2 + 1,3 - 1)");
+  });
+});
+
 Deno.test("value", async (t) => {
   await t.step("parses number strings", () => {
     expect(serialize(builder.value("12.5"))).toBe("12.5");
