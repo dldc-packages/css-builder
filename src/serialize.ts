@@ -1,5 +1,23 @@
-export type AnyAstNodeValue = AnyAstNode | null | readonly AnyAstNodeValue[];
+/**
+ * @module serialize
+ *
+ * Serialization of CSS AST nodes to strings.
+ *
+ * This module provides utility functions for converting Abstract Syntax Tree (AST) nodes
+ * back into valid CSS strings. The serializer traverses the AST structure and concatenates
+ * the string values of all nodes, preserving the correct CSS syntax.
+ *
+ * ## Usage
+ *
+ * ```ts
+ * import { add, multiply, serialize } from "@dldc/css-builder";
+ *
+ * const expr = add("100px", multiply(2, "20px"));
+ * const css = serialize(expr); // "calc(100px + 2 * 20px)"
+ * ```
+ */
 
+export type AnyAstNodeValue = AnyAstNode | null | readonly AnyAstNodeValue[];
 export interface AnyAstNode {
   readonly kind: string;
   readonly value: string | readonly AnyAstNodeValue[];

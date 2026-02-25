@@ -1,7 +1,31 @@
+/**
+ * @module create
+ *
+ * Low-level AST node constructors for CSS expressions.
+ *
+ * This module provides factory functions for creating individual AST nodes. These are
+ * the building blocks used internally by the builder module. Most users should prefer
+ * the high-level {@link builder} API instead.
+ *
+ * This module is most useful when:
+ * - Building custom AST structures
+ * - Implementing custom CSS expression builders
+ * - Integrating with other CSS-related tools that use this AST format
+ */
+
 import type * as Ast from "./ast.ts";
 
+/**
+ * Type representing a tuple with at least one item.
+ * @template T The type of items
+ */
 export type OneOrMore<T> = readonly [T, ...(readonly T[])];
 
+/**
+ * Creates a min() AST node.
+ * @param items One or more calc sum expressions
+ * @returns A Min AST node
+ */
 export function min(...items: OneOrMore<Ast.CalcSum>): Ast.Min {
   const [first, ...rest] = items;
   return {
@@ -18,6 +42,11 @@ export function min(...items: OneOrMore<Ast.CalcSum>): Ast.Min {
   };
 }
 
+/**
+ * Creates a max() AST node.
+ * @param items One or more calc sum expressions
+ * @returns A Max AST node
+ */
 export function max(...items: OneOrMore<Ast.CalcSum>): Ast.Max {
   const [first, ...rest] = items;
   return {
@@ -34,6 +63,13 @@ export function max(...items: OneOrMore<Ast.CalcSum>): Ast.Max {
   };
 }
 
+/**
+ * Creates a clamp() AST node.
+ * @param min The minimum value (or 'none')
+ * @param preferred The preferred value
+ * @param max The maximum value (or 'none')
+ * @returns A Clamp AST node
+ */
 export function clamp(
   min: Ast.CalcSum | { kind: "keyword"; value: "none" },
   preferred: Ast.CalcSum,
@@ -54,6 +90,11 @@ export function clamp(
   };
 }
 
+/**
+ * Creates a calc() AST node.
+ * @param sum The calc sum expression
+ * @returns A Calc AST node
+ */
 export function calc(sum: Ast.CalcSum): Ast.Calc {
   return {
     kind: "calc",
@@ -66,6 +107,11 @@ export function calc(sum: Ast.CalcSum): Ast.Calc {
   };
 }
 
+/**
+ * Creates an exp() AST node.
+ * @param sum The exponent expression
+ * @returns An Exp AST node
+ */
 export function exp(sum: Ast.CalcSum): Ast.Exp {
   return {
     kind: "exp",
@@ -78,6 +124,13 @@ export function exp(sum: Ast.CalcSum): Ast.Exp {
   };
 }
 
+/**
+ * Creates a round() AST node.
+ * @param strategy The rounding strategy ('nearest', 'up', 'down', 'to-zero', or null)
+ * @param value The value to round
+ * @param interval Optional interval for rounding
+ * @returns A Round AST node
+ */
 export function round(
   strategy: Ast.RoundStrategy | null,
   value: Ast.CalcSum,
@@ -100,7 +153,12 @@ export function round(
     ],
   };
 }
-
+/**
+ * Creates a calc-sum AST node (addition/subtraction).
+ * @param first The first product
+ * @param products Subsequent products with operators ('+' or '-')
+ * @returns A CalcSum AST node
+ */
 export function clacSum(
   first: Ast.CalcProduct,
   ...products: readonly ["+" | "-", Ast.CalcProduct][]
@@ -119,6 +177,12 @@ export function clacSum(
   };
 }
 
+/**
+ * Creates a calc-product AST node (multiplication/division).
+ * @param first The first value
+ * @param values Subsequent values with operators ('*' or '/')
+ * @returns A CalcProduct AST node
+ */
 export function calcProduct(
   first: Ast.CalcValue,
   ...values: readonly ["*" | "/", Ast.CalcValue][]
@@ -137,20 +201,36 @@ export function calcProduct(
   };
 }
 
+/**
+ * Object containing factory functions for creating CalcValue AST nodes.
+ */
 export type CalcValueCreators = {
+  /** Creates a number CalcValue */
   number(value: number | string): Ast.CalcValue;
+  /** Creates a dimension (value with unit) CalcValue */
   dimension(value: number | string, unit: string): Ast.CalcValue;
+  /** Creates a percentage CalcValue */
   percentage(value: number | string): Ast.CalcValue;
+  /** Creates a keyword (e, pi, infinity, NaN) CalcValue */
   keyword(value: Ast.CalcKeyword): Ast.CalcValue;
+  /** Creates a grouped (parenthesized) CalcValue */
   group(value: Ast.CalcSum): Ast.CalcValue;
+  /** Creates a raw/unprocessed CalcValue */
   raw(value: string): Ast.CalcValue;
+  /** Creates a var() custom property CalcValue */
   var(name: string, fallback?: Ast.CalcSum): Ast.CalcValue;
 };
 
+/**
+ * Factory object for creating different types of CalcValue AST nodes.
+ * Provides methods for creating numbers, dimensions, percentages, keywords, grouped expressions, raw strings, and var() references.
+ */
 export const calcValue: CalcValueCreators = {
+  /** @param value The numeric value */
   number(value: number | string): Ast.CalcValue {
     return { kind: "number", value: value.toString() };
   },
+  /** @param value The numeric value @param unit The unit (px, em, rem, etc.) */
   dimension(value: number | string, unit: string): Ast.CalcValue {
     return {
       kind: "dimension",
@@ -160,6 +240,7 @@ export const calcValue: CalcValueCreators = {
       ],
     };
   },
+  /** @param value The numeric value */
   percentage(value: number | string): Ast.CalcValue {
     return {
       kind: "percentage",
@@ -169,12 +250,14 @@ export const calcValue: CalcValueCreators = {
       ],
     };
   },
+  /** @param value A CSS keyword constant (e, pi, infinity, NaN) */
   keyword(value: Ast.CalcKeyword): Ast.CalcValue {
     return {
       kind: "keyword",
       value,
     };
   },
+  /** @param value A calc sum expression to group */
   group(value: Ast.CalcSum): Ast.CalcValue {
     return {
       kind: "group",
@@ -184,12 +267,14 @@ export const calcValue: CalcValueCreators = {
       }],
     };
   },
+  /** @param value A raw CSS string */
   raw(value: string): Ast.CalcValue {
     return {
       kind: "raw",
       value,
     };
   },
+  /** @param name The custom property name (e.g., '--my-var') @param fallback Optional fallback value */
   var(name: string, fallback?: Ast.CalcSum): Ast.CalcValue {
     return {
       kind: "var",

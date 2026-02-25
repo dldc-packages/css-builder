@@ -140,3 +140,9 @@ Converts an expression to a CSS string.
 const expr = multiply(add(10, 20), 2);
 const css = serialize(expr); // "calc((10 + 20)*2)"
 ```
+
+## Scope
+
+This library currently includes only the CSS functions and features that I
+personally needed. If you need additional CSS math functions or features, feel
+free to open an issue or submit a pull request - contributions are welcome!
