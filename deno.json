@@ -1,0 +1,30 @@
+{
+  "name": "@dldc/css-builder",
+  "version": "1.0.0",
+  "exports": {
+    ".": "./mod.ts",
+    "./ast": "./src/ast.ts",
+    "./builder": "./src/builder.ts",
+    "./create": "./src/create.ts",
+    "./serialize": "./src/serialize.ts"
+  },
+  "imports": {
+    "@std/expect": "jsr:@std/expect@^1.0.16"
+  },
+  "tasks": {
+    "test:run": "deno test -A",
+    "test:watch": "deno test --watch",
+    "bump": "deno run -A jsr:@mys/bump@1",
+    "deps:outdated": "deno outdated",
+    "deps:update": "deno outdated --update --latest --interactive",
+    "check": "deno fmt --check . && deno lint . && deno check **/*.ts && deno task test:run",
+    "test:coverage": "deno test -A --coverage=coverage && deno coverage coverage --html"
+  },
+  "lint": {
+    "rules": {
+      "exclude": [
+        "no-explicit-any"
+      ]
+    }
+  }
+}
