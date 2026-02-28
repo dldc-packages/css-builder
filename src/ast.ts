@@ -145,6 +145,23 @@ export type Exp = {
 };
 
 /**
+ * AST node representing a CSS pow() function.
+ * Raises a base value to the power of an exponent.
+ * @example pow(2, 3)
+ */
+export type Pow = {
+  readonly kind: "pow";
+  readonly value: [
+    { readonly kind: "function"; readonly value: "pow" },
+    { readonly kind: "token"; readonly value: "(" },
+    CalcSum,
+    { readonly kind: "token"; readonly value: "," },
+    CalcSum,
+    { readonly kind: "token"; readonly value: ")" },
+  ];
+};
+
+/**
  * Rounding strategy for the round() function.
  * - 'nearest': Round to the nearest multiple of the interval
  * - 'up': Round away from zero
@@ -258,6 +275,7 @@ export type CalcValue =
   | Clamp
   | Calc
   | Exp
+  | Pow
   | Round
   | Var;
 

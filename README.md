@@ -102,6 +102,15 @@ serialize(exp(2)); // "exp(2)"
 serialize(exp("2.5")); // "exp(2.5)"
 ```
 
+#### `pow(base, exponent)`
+
+Creates a `pow()` expression.
+
+```typescript
+serialize(pow(2, 3)); // "pow(2,3)"
+serialize(pow("var(--base)", "2")); // "pow(var(--base),2)"
+```
+
 #### `round(...)`
 
 Creates a `round()` expression. You can pass a rounding strategy as the first

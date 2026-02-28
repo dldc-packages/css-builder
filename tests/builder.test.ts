@@ -221,10 +221,6 @@ Deno.test("clamp", async (t) => {
 });
 
 Deno.test("exp", async (t) => {
-  await t.step("throws for null item", () => {
-    expect(() => builder.exp(null)).toThrow("Expected at least one item.");
-  });
-
   await t.step("wraps numbers and strings", () => {
     const result = builder.exp("2.5");
     expect(serialize(result!)).toBe("exp(2.5)");
@@ -239,6 +235,40 @@ Deno.test("exp", async (t) => {
     );
     const result = builder.exp(calc);
     expect(serialize(result!)).toBe("exp(2 + 1)");
+  });
+});
+
+Deno.test("pow", async (t) => {
+  await t.step("creates pow with numbers", () => {
+    const result = builder.pow(2, 3);
+    expect(serialize(result)).toBe("pow(2,3)");
+  });
+
+  await t.step("creates pow with strings", () => {
+    const result = builder.pow("var(--base)", "2");
+    expect(serialize(result)).toBe("pow(var(--base),2)");
+  });
+
+  await t.step("creates pow with dimensions", () => {
+    const result = builder.pow("10px", "2");
+    expect(serialize(result)).toBe("pow(10px,2)");
+  });
+
+  await t.step("unwraps calc values", () => {
+    const calcBase = create.calc(
+      create.clacSum(create.calcValue.number(2), [
+        "+",
+        create.calcValue.number(1),
+      ]),
+    );
+    const calcExponent = create.calc(
+      create.clacSum(create.calcValue.number(3), [
+        "-",
+        create.calcValue.number(1),
+      ]),
+    );
+    const result = builder.pow(calcBase, calcExponent);
+    expect(serialize(result)).toBe("pow(2 + 1,3 - 1)");
   });
 });
 

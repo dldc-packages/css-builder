@@ -125,6 +125,26 @@ export function exp(sum: Ast.CalcSum): Ast.Exp {
 }
 
 /**
+ * Creates a pow() AST node.
+ * @param base The base value
+ * @param exponent The exponent value
+ * @returns A Pow AST node
+ */
+export function pow(base: Ast.CalcSum, exponent: Ast.CalcSum): Ast.Pow {
+  return {
+    kind: "pow",
+    value: [
+      { kind: "function", value: "pow" },
+      { kind: "token", value: "(" },
+      base,
+      { kind: "token", value: "," },
+      exponent,
+      { kind: "token", value: ")" },
+    ],
+  };
+}
+
+/**
  * Creates a round() AST node.
  * @param strategy The rounding strategy ('nearest', 'up', 'down', 'to-zero', or null)
  * @param value The value to round

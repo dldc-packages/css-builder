@@ -4,7 +4,7 @@
  * High-level builder API for constructing CSS expressions.
  *
  * This module provides composable functions for building CSS calc() expressions and related
- * CSS math functions (min, max, clamp, exp, round, etc.). All functions accept flexible input
+ * CSS math functions (min, max, clamp, exp, pow, round, etc.). All functions accept flexible input
  * types and automatically flatten nested expressions for optimal CSS output.
  *
  * ## Usage
@@ -265,16 +265,29 @@ export function clamp(
  * @param item - The exponent value (number, string, or calc expression)
  * @returns An Exp AST node representing the exp() function
  */
-export function exp(item: AnyMaybeExpression): Ast.Exp {
-  if (!item) {
-    throw new Error("Expected at least one item.");
-  }
+export function exp(item: AnyExpression): Ast.Exp {
   if (typeof item === "string" || typeof item === "number") {
     return create.exp(value(item));
   }
-  return create.exp(anyExprToCalcSum(item as AnyExpression));
+  return create.exp(anyExprToCalcSum(item));
 }
 
+/**
+ * Creates a CSS pow() function expression.
+ * Raises the base value to the power of the exponent.
+ * @param base - The base value (number, string, or calc expression)
+ * @param exponent - The exponent value (number, string, or calc expression)
+ * @returns A Pow AST node representing the pow() function
+ */
+export function pow(
+  base: AnyExpression,
+  exponent: AnyExpression,
+): Ast.Pow {
+  return create.pow(
+    anyExprToCalcSum(base),
+    anyExprToCalcSum(exponent),
+  );
+}
 /**
  * Creates a CSS round() function expression.
  * Rounds a value to the nearest multiple of an interval.
