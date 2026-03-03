@@ -98,7 +98,7 @@ Deno.test("calcValue", async (t) => {
     });
 
     await t.step("creates grouped sum", () => {
-      const sum = create.clacSum(create.calcValue.dimension(10, "px"), [
+      const sum = create.calcSum(create.calcValue.dimension(10, "px"), [
         "+",
         create.calcValue.dimension(5, "px"),
       ]);
@@ -124,7 +124,7 @@ Deno.test("calcValue", async (t) => {
     });
 
     await t.step("creates var with fallback", () => {
-      const fallback = create.clacSum(create.calcValue.dimension(10, "px"), [
+      const fallback = create.calcSum(create.calcValue.dimension(10, "px"), [
         "+",
         create.calcValue.number(2),
       ]);
@@ -177,16 +177,16 @@ Deno.test("calcProduct", async (t) => {
   });
 });
 
-Deno.test("clacSum", async (t) => {
+Deno.test("calcSum", async (t) => {
   await t.step("returns single value when no operations", () => {
     const value = create.calcValue.number(10);
-    const result = create.clacSum(value);
+    const result = create.calcSum(value);
     expect(result).toBe(value);
     expect(serialize(result)).toBe("10");
   });
 
   await t.step("creates addition", () => {
-    const result = create.clacSum(create.calcValue.number(10), [
+    const result = create.calcSum(create.calcValue.number(10), [
       "+",
       create.calcValue.number(5),
     ]);
@@ -195,7 +195,7 @@ Deno.test("clacSum", async (t) => {
   });
 
   await t.step("creates subtraction", () => {
-    const result = create.clacSum(create.calcValue.number(100), [
+    const result = create.calcSum(create.calcValue.number(100), [
       "-",
       create.calcValue.number(25),
     ]);
@@ -203,7 +203,7 @@ Deno.test("clacSum", async (t) => {
   });
 
   await t.step("creates multiple operations", () => {
-    const result = create.clacSum(
+    const result = create.calcSum(
       create.calcValue.dimension(100, "px"),
       ["+", create.calcValue.dimension(50, "px")],
       ["-", create.calcValue.dimension(20, "px")],
@@ -216,7 +216,7 @@ Deno.test("clacSum", async (t) => {
       "*",
       create.calcValue.number(2),
     ]);
-    const result = create.clacSum(product, ["+", create.calcValue.number(5)]);
+    const result = create.calcSum(product, ["+", create.calcValue.number(5)]);
     expect(serialize(result)).toBe("10*2 + 5");
   });
 });
@@ -238,7 +238,7 @@ Deno.test("calc", async (t) => {
   });
 
   await t.step("wraps sum in calc function", () => {
-    const sum = create.clacSum(create.calcValue.dimension(100, "px"), [
+    const sum = create.calcSum(create.calcValue.dimension(100, "px"), [
       "+",
       create.calcValue.dimension(50, "px"),
     ]);
@@ -251,7 +251,7 @@ Deno.test("calc", async (t) => {
       "/",
       create.calcValue.number(2),
     ]);
-    const sum = create.clacSum(product, [
+    const sum = create.calcSum(product, [
       "-",
       create.calcValue.dimension(20, "px"),
     ]);
@@ -277,7 +277,7 @@ Deno.test("exp", async (t) => {
   });
 
   await t.step("wraps sum in exp function", () => {
-    const sum = create.clacSum(create.calcValue.dimension(10, "px"), [
+    const sum = create.calcSum(create.calcValue.dimension(10, "px"), [
       "+",
       create.calcValue.number(2),
     ]);
@@ -329,7 +329,7 @@ Deno.test("min", async (t) => {
   });
 
   await t.step("creates min with calc sums", () => {
-    const sum1 = create.clacSum(create.calcValue.dimension(100, "px"), [
+    const sum1 = create.calcSum(create.calcValue.dimension(100, "px"), [
       "+",
       create.calcValue.dimension(20, "px"),
     ]);
@@ -408,7 +408,7 @@ Deno.test("clamp", async (t) => {
 
   await t.step("creates clamp with complex expressions", () => {
     const min = create.calcValue.dimension(320, "px");
-    const preferred = create.clacSum(create.calcValue.dimension(100, "vw"), [
+    const preferred = create.calcSum(create.calcValue.dimension(100, "vw"), [
       "-",
       create.calcValue.dimension(40, "px"),
     ]);
@@ -420,7 +420,7 @@ Deno.test("clamp", async (t) => {
 
 Deno.test("integration tests", async (t) => {
   await t.step("complex nested expression", () => {
-    const innerCalc = create.clacSum(create.calcValue.percentage(100), [
+    const innerCalc = create.calcSum(create.calcValue.percentage(100), [
       "-",
       create.calcValue.dimension(20, "px"),
     ]);
@@ -437,7 +437,7 @@ Deno.test("integration tests", async (t) => {
       create.calcValue.dimension(16, "px"),
       ["*", create.calcValue.number(1.5)],
     );
-    const preferredSum = create.clacSum(create.calcValue.dimension(1, "rem"), [
+    const preferredSum = create.calcSum(create.calcValue.dimension(1, "rem"), [
       "+",
       create.calcValue.percentage(2),
     ]);
@@ -455,7 +455,7 @@ Deno.test("integration tests", async (t) => {
       "/",
       create.calcValue.number(2),
     ]);
-    const sum = create.clacSum(product1, ["-", product2]);
+    const sum = create.calcSum(product1, ["-", product2]);
     const result = create.calc(sum);
     expect(serialize(result)).toBe("calc(100vw*0.5 - 50px/2)");
   });
@@ -467,7 +467,7 @@ Deno.test("math functions as CalcValue", async (t) => {
       create.calcValue.dimension(100, "px"),
       create.calcValue.percentage(50),
     );
-    const sum = create.clacSum(minValue, [
+    const sum = create.calcSum(minValue, [
       "+",
       create.calcValue.dimension(10, "px"),
     ]);
@@ -494,7 +494,7 @@ Deno.test("math functions as CalcValue", async (t) => {
       create.calcValue.percentage(50),
       create.calcValue.dimension(800, "px"),
     );
-    const sum = create.clacSum(clampValue, [
+    const sum = create.calcSum(clampValue, [
       "-",
       create.calcValue.dimension(20, "px"),
     ]);
@@ -504,7 +504,7 @@ Deno.test("math functions as CalcValue", async (t) => {
 
   await t.step("exp inside calc product", () => {
     const expValue = create.exp(
-      create.clacSum(create.calcValue.number(2), [
+      create.calcSum(create.calcValue.number(2), [
         "+",
         create.calcValue.number(1),
       ]),
@@ -523,7 +523,7 @@ Deno.test("math functions as CalcValue", async (t) => {
       create.calcValue.var("--width"),
       create.calcValue.dimension(50, "px"),
     );
-    const sum = create.clacSum(roundValue, [
+    const sum = create.calcSum(roundValue, [
       "+",
       create.calcValue.dimension(10, "px"),
     ]);
@@ -542,7 +542,7 @@ Deno.test("math functions as CalcValue", async (t) => {
       create.calcValue.dimension(100, "px"),
       create.calcValue.percentage(15),
     );
-    const sum = create.clacSum(minValue, ["+", maxValue]);
+    const sum = create.calcSum(minValue, ["+", maxValue]);
     const result = create.calc(sum);
     expect(serialize(result)).toBe("calc(min(200px,30%) + max(100px,15%))");
   });
@@ -594,7 +594,7 @@ Deno.test("math functions as CalcValue", async (t) => {
       create.calcValue.dimension(320, "px"),
       create.calcValue.percentage(20),
     );
-    const sum = create.clacSum(min1, ["-", max1]);
+    const sum = create.calcSum(min1, ["-", max1]);
     const result = create.calc(sum);
     expect(serialize(result)).toBe("calc(min(100vw,1200px) - max(320px,20%))");
   });
@@ -603,7 +603,7 @@ Deno.test("math functions as CalcValue", async (t) => {
 Deno.test("var as CalcValue", async (t) => {
   await t.step("var inside calc sum", () => {
     const varValue = create.calcValue.var("--gap");
-    const sum = create.clacSum(varValue, [
+    const sum = create.calcSum(varValue, [
       "+",
       create.calcValue.dimension(4, "px"),
     ]);
@@ -612,12 +612,12 @@ Deno.test("var as CalcValue", async (t) => {
   });
 
   await t.step("var with fallback inside calc sum", () => {
-    const fallback = create.clacSum(create.calcValue.dimension(8, "px"), [
+    const fallback = create.calcSum(create.calcValue.dimension(8, "px"), [
       "+",
       create.calcValue.number(2),
     ]);
     const varValue = create.calcValue.var("--padding", fallback);
-    const sum = create.clacSum(varValue, [
+    const sum = create.calcSum(varValue, [
       "-",
       create.calcValue.dimension(1, "px"),
     ]);
@@ -644,7 +644,7 @@ Deno.test("var as CalcValue", async (t) => {
       create.calcValue.var("--max"),
       create.calcValue.percentage(80),
     );
-    const sum = create.clacSum(minValue, ["+", maxValue]);
+    const sum = create.calcSum(minValue, ["+", maxValue]);
     const result = create.calc(sum);
     expect(serialize(result)).toBe(
       "calc(min(var(--min),12px) + max(var(--max),80%))",
@@ -667,7 +667,7 @@ Deno.test("var as CalcValue", async (t) => {
 
 Deno.test("serialize", async (t) => {
   await t.step("handles very complex ast", () => {
-    const innerCalc = create.clacSum(create.calcValue.percentage(100), [
+    const innerCalc = create.calcSum(create.calcValue.percentage(100), [
       "-",
       create.calcValue.dimension(20, "px"),
     ]);
@@ -675,7 +675,7 @@ Deno.test("serialize", async (t) => {
       "/",
       create.calcValue.number(2),
     ]);
-    const gapFallback = create.clacSum(create.calcValue.dimension(4, "px"), [
+    const gapFallback = create.calcSum(create.calcValue.dimension(4, "px"), [
       "+",
       create.calcValue.number(6),
     ]);
@@ -687,13 +687,13 @@ Deno.test("serialize", async (t) => {
       create.calcValue.dimension(2, "rem"),
       create.calcValue.var("--max", create.calcValue.percentage(25)),
     );
-    const sum = create.clacSum(product, ["+", minValue], ["-", maxValue]);
+    const sum = create.calcSum(product, ["+", minValue], ["-", maxValue]);
     const calc = create.calc(sum);
     const scaled = create.calcProduct(calc, [
       "/",
       create.calcValue.var("--scale", create.calcValue.number(2)),
     ]);
-    const full = create.clacSum(create.calcValue.number(1), ["+", scaled]);
+    const full = create.calcSum(create.calcValue.number(1), ["+", scaled]);
 
     expect(serialize(full)).toBe(
       "1 + calc((100% - 20px)/2 + min(var(--gap,4px + 6),8px) - max(2rem,var(--max,25%)))/var(--scale,2)",

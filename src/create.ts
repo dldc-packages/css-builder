@@ -179,7 +179,7 @@ export function round(
  * @param products Subsequent products with operators ('+' or '-')
  * @returns A CalcSum AST node
  */
-export function clacSum(
+export function calcSum(
   first: Ast.CalcProduct,
   ...products: readonly ["+" | "-", Ast.CalcProduct][]
 ): Ast.CalcSum {

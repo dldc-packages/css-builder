@@ -31,7 +31,7 @@ export type AnyMaybeExpression = AnyExpression | null;
  * @param items - The items to add or subtract (can be numbers, strings, or calc expressions)
  * @returns A normalized Calc AST node
  */
-function addOrSubstract(
+function addOrSubtract(
   op: "+" | "-",
   ...items: AnyMaybeExpression[]
 ): Ast.Calc {
@@ -73,7 +73,7 @@ function addOrSubstract(
   if (!first) {
     throw new Error("Expected at least one item.");
   }
-  return create.calc(create.clacSum(first[1], ...resolvedItems));
+  return create.calc(create.calcSum(first[1], ...resolvedItems));
 }
 
 /**
@@ -83,7 +83,7 @@ function addOrSubstract(
  * @returns A Calc AST node representing the addition
  */
 export function add(...items: AnyMaybeExpression[]): Ast.Calc {
-  return addOrSubstract("+", ...items);
+  return addOrSubtract("+", ...items);
 }
 
 /**
@@ -92,8 +92,8 @@ export function add(...items: AnyMaybeExpression[]): Ast.Calc {
  * @param items - The values to subtract (numbers, strings, or calc expressions)
  * @returns A Calc AST node representing the subtraction
  */
-export function substract(...items: AnyMaybeExpression[]): Ast.Calc {
-  return addOrSubstract("-", ...items);
+export function subtract(...items: AnyMaybeExpression[]): Ast.Calc {
+  return addOrSubtract("-", ...items);
 }
 
 /**
@@ -133,7 +133,7 @@ export function multiplyOrDivide(
         });
       } else {
         // Cannot flatten: wrap in group to preserve precedence
-        resolvedItems.push([op, create.calcValue.group(create.clacSum(item))]);
+        resolvedItems.push([op, create.calcValue.group(create.calcSum(item))]);
       }
       return;
     }

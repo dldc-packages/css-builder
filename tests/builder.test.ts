@@ -15,7 +15,7 @@ Deno.test("add", async (t) => {
   });
 
   await t.step("adds dimensions with mixed sources", () => {
-    const sum = create.clacSum(create.calcValue.dimension(10, "px"), [
+    const sum = create.calcSum(create.calcValue.dimension(10, "px"), [
       "+",
       create.calcValue.number(2),
     ]);
@@ -24,7 +24,7 @@ Deno.test("add", async (t) => {
   });
 
   await t.step("merges calc sum operands", () => {
-    const sum = create.clacSum(
+    const sum = create.calcSum(
       create.calcValue.number(1),
       ["+", create.calcValue.number(2)],
       ["-", create.calcValue.number(3)],
@@ -35,7 +35,7 @@ Deno.test("add", async (t) => {
 
   await t.step("unwraps calc", () => {
     const inner = create.calc(
-      create.clacSum(create.calcValue.number(1), [
+      create.calcSum(create.calcValue.number(1), [
         "+",
         create.calcValue.number(2),
       ]),
@@ -45,34 +45,34 @@ Deno.test("add", async (t) => {
   });
 });
 
-Deno.test("substract", async (t) => {
+Deno.test("subtract", async (t) => {
   await t.step("throws with no items", () => {
-    expect(() => builder.substract()).toThrow("Expected at least one item.");
+    expect(() => builder.subtract()).toThrow("Expected at least one item.");
   });
 
-  await t.step("substracts numbers", () => {
-    const result = builder.substract(10, 2, 3);
+  await t.step("subtracts numbers", () => {
+    const result = builder.subtract(10, 2, 3);
     expect(serialize(result!)).toBe("calc(10 - 2 - 3)");
   });
 
   await t.step("merges calc sum operands with subtraction", () => {
-    const sum = create.clacSum(
+    const sum = create.calcSum(
       create.calcValue.number(5),
       ["+", create.calcValue.number(2)],
       ["-", create.calcValue.number(1)],
     );
-    const result = builder.substract(10, sum);
+    const result = builder.subtract(10, sum);
     expect(serialize(result!)).toBe("calc(10 - 5 - 2 + 1)");
   });
 
   await t.step("unwraps calc", () => {
     const inner = create.calc(
-      create.clacSum(create.calcValue.number(7), [
+      create.calcSum(create.calcValue.number(7), [
         "-",
         create.calcValue.number(2),
       ]),
     );
-    const result = builder.substract(inner, 1);
+    const result = builder.subtract(inner, 1);
     expect(serialize(result!)).toBe("calc(7 - 2 - 1)");
   });
 });
@@ -98,7 +98,7 @@ Deno.test("multiply", async (t) => {
   });
 
   await t.step("wraps calc sum in group", () => {
-    const sum = create.clacSum(create.calcValue.number(10), [
+    const sum = create.calcSum(create.calcValue.number(10), [
       "+",
       create.calcValue.number(2),
     ]);
@@ -138,7 +138,7 @@ Deno.test("divide", async (t) => {
   });
 
   await t.step("wraps calc sum in group", () => {
-    const sum = create.clacSum(create.calcValue.number(9), [
+    const sum = create.calcSum(create.calcValue.number(9), [
       "-",
       create.calcValue.number(3),
     ]);
@@ -221,7 +221,7 @@ Deno.test("divide", async (t) => {
     // ((2 + 3) * 4) / ((10 - 2) / 2) = (5 * 4) / (8 / 2) = 20 / 4 = 5
     const result = builder.divide(
       builder.multiply(builder.add(2, 3), 4),
-      builder.divide(builder.substract(10, 2), 2),
+      builder.divide(builder.subtract(10, 2), 2),
     );
     expect(serialize(result!)).toBe("calc((2 + 3)*4/((10 - 2)/2))");
   });
@@ -258,7 +258,7 @@ Deno.test("min", async (t) => {
 
   await t.step("unwraps calc", () => {
     const calc = create.calc(
-      create.clacSum(create.calcValue.number(5), [
+      create.calcSum(create.calcValue.number(5), [
         "+",
         create.calcValue.number(1),
       ]),
@@ -280,7 +280,7 @@ Deno.test("max", async (t) => {
 
   await t.step("unwraps calc", () => {
     const calc = create.calc(
-      create.clacSum(create.calcValue.number(5), [
+      create.calcSum(create.calcValue.number(5), [
         "-",
         create.calcValue.number(1),
       ]),
@@ -303,13 +303,13 @@ Deno.test("clamp", async (t) => {
 
   await t.step("unwraps calc", () => {
     const minCalc = create.calc(
-      create.clacSum(create.calcValue.number(5), [
+      create.calcSum(create.calcValue.number(5), [
         "+",
         create.calcValue.number(1),
       ]),
     );
     const maxCalc = create.calc(
-      create.clacSum(create.calcValue.number(10), [
+      create.calcSum(create.calcValue.number(10), [
         "-",
         create.calcValue.number(2),
       ]),
@@ -327,7 +327,7 @@ Deno.test("exp", async (t) => {
 
   await t.step("unwraps calc", () => {
     const calc = create.calc(
-      create.clacSum(create.calcValue.number(2), [
+      create.calcSum(create.calcValue.number(2), [
         "+",
         create.calcValue.number(1),
       ]),
@@ -355,13 +355,13 @@ Deno.test("pow", async (t) => {
 
   await t.step("unwraps calc values", () => {
     const calcBase = create.calc(
-      create.clacSum(create.calcValue.number(2), [
+      create.calcSum(create.calcValue.number(2), [
         "+",
         create.calcValue.number(1),
       ]),
     );
     const calcExponent = create.calc(
-      create.clacSum(create.calcValue.number(3), [
+      create.calcSum(create.calcValue.number(3), [
         "-",
         create.calcValue.number(1),
       ]),
@@ -395,13 +395,13 @@ Deno.test("round", async (t) => {
 
   await t.step("unwraps calc values", () => {
     const calcValue = create.calc(
-      create.clacSum(create.calcValue.number(2), [
+      create.calcSum(create.calcValue.number(2), [
         "+",
         create.calcValue.number(1),
       ]),
     );
     const calcInterval = create.calc(
-      create.clacSum(create.calcValue.number(3), [
+      create.calcSum(create.calcValue.number(3), [
         "-",
         create.calcValue.number(1),
       ]),

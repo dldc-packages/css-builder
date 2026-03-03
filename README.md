@@ -41,13 +41,13 @@ serialize(add(10, 20, 30)); // "calc(10 + 20 + 30)"
 serialize(add("10px", "2rem")); // "calc(10px + 2rem)"
 ```
 
-#### `substract(...values)`
+#### `subtract(...values)`
 
 Creates a `calc()` subtraction expression.
 
 ```typescript
-serialize(substract(100, 20, 10)); // "calc(100 - 20 - 10)"
-serialize(substract("100%", "20px")); // "calc(100% - 20px)"
+serialize(subtract(100, 20, 10)); // "calc(100 - 20 - 10)"
+serialize(subtract("100%", "20px")); // "calc(100% - 20px)"
 ```
 
 #### `multiply(...values)`
