@@ -145,6 +145,105 @@ Deno.test("divide", async (t) => {
     const result = builder.divide(sum, 3);
     expect(serialize(result!)).toBe("calc((9 - 3)/3)");
   });
+
+  await t.step("preserves parentheses when dividing by division", () => {
+    // 8 / (4 / 2) = 8 / 2 = 4
+    // but 8 / 4 / 2 = 2 / 2 = 1
+    const result = builder.divide(8, builder.divide(4, 2));
+    expect(serialize(result!)).toBe("calc(8/(4/2))");
+  });
+
+  await t.step("preserves parentheses when dividing by multiplication", () => {
+    // 8 / (2 * 2) = 8 / 4 = 2
+    // but 8 / 2 * 2 = 4 * 2 = 8
+    const result = builder.divide(8, builder.multiply(2, 2));
+    expect(serialize(result!)).toBe("calc(8/(2*2))");
+  });
+
+  await t.step("preserves parentheses when multiplying by division", () => {
+    // 8 * (4 / 2) = 8 * 2 = 16
+    // but 8 * 4 / 2 = 32 / 2 = 16 (this actually works out the same)
+    // However: 2 / (4 / 2) = 2 / 2 = 1
+    // while 2 / 4 / 2 = 0.5 / 2 = 0.25
+    const result = builder.multiply(8, builder.divide(4, 2));
+    expect(serialize(result!)).toBe("calc(8*(4/2))");
+  });
+
+  await t.step("deeply nested divisions preserve all parentheses", () => {
+    // 64 / (8 / (4 / 2)) = 64 / (8 / 2) = 64 / 4 = 16
+    // but 64 / 8 / 4 / 2 = 8 / 4 / 2 = 2 / 2 = 1
+    const result = builder.divide(64, builder.divide(8, builder.divide(4, 2)));
+    expect(serialize(result!)).toBe("calc(64/(8/(4/2)))");
+  });
+
+  await t.step("mixed multiply and divide with deep nesting", () => {
+    // 100 / (10 * (5 / 2)) = 100 / (10 * 2.5) = 100 / 25 = 4
+    // but 100 / 10 * 5 / 2 = 10 * 5 / 2 = 50 / 2 = 25
+    const result = builder.divide(
+      100,
+      builder.multiply(10, builder.divide(5, 2)),
+    );
+    expect(serialize(result!)).toBe("calc(100/(10*(5/2)))");
+  });
+
+  await t.step("complex nested operations with addition", () => {
+    // (10 + 20) / ((4 + 2) / 2) = 30 / (6 / 2) = 30 / 3 = 10
+    // but (10 + 20) / (4 + 2) / 2 = 30 / 6 / 2 = 5 / 2 = 2.5
+    const result = builder.divide(
+      builder.add(10, 20),
+      builder.divide(builder.add(4, 2), 2),
+    );
+    expect(serialize(result!)).toBe("calc((10 + 20)/((4 + 2)/2))");
+  });
+
+  await t.step("multiple nested divisions as divisors", () => {
+    // 1000 / (100 / 10) / (20 / 5) = 1000 / 10 / 4 = 100 / 4 = 25
+    // This should preserve both groups
+    const result = builder.divide(
+      1000,
+      builder.divide(100, 10),
+      builder.divide(20, 5),
+    );
+    expect(serialize(result!)).toBe("calc(1000/(100/10)/(20/5))");
+  });
+
+  await t.step("multiply with multiple nested divisions", () => {
+    // 2 * (12 / 3) * (8 / 4) = 2 * 4 * 2 = 16
+    const result = builder.multiply(
+      2,
+      builder.divide(12, 3),
+      builder.divide(8, 4),
+    );
+    expect(serialize(result!)).toBe("calc(2*(12/3)*(8/4))");
+  });
+
+  await t.step("nested operations with mixed add/multiply/divide", () => {
+    // ((2 + 3) * 4) / ((10 - 2) / 2) = (5 * 4) / (8 / 2) = 20 / 4 = 5
+    const result = builder.divide(
+      builder.multiply(builder.add(2, 3), 4),
+      builder.divide(builder.substract(10, 2), 2),
+    );
+    expect(serialize(result!)).toBe("calc((2 + 3)*4/((10 - 2)/2))");
+  });
+
+  await t.step("quadruple nested division", () => {
+    // 256 / (64 / (16 / (8 / 2))) = 256 / (64 / (16 / 4)) = 256 / (64 / 4) = 256 / 16 = 16
+    const innermost = builder.divide(8, 2);
+    const inner = builder.divide(16, innermost);
+    const outer = builder.divide(64, inner);
+    const result = builder.divide(256, outer);
+    expect(serialize(result!)).toBe("calc(256/(64/(16/(8/2))))");
+  });
+
+  await t.step("division chain starting with division", () => {
+    // (100 / 5) / (10 / 2) = 20 / 5 = 4
+    // First division should flatten, second should preserve parens
+    const result = builder.divide(
+      builder.divide(100, 5),
+      builder.divide(10, 2),
+    );
+    expect(serialize(result!)).toBe("calc(100/5/(10/2))");
+  });
 });
 
 Deno.test("min", async (t) => {

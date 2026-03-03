@@ -108,7 +108,7 @@ export function multiplyOrDivide(
   ...items: AnyMaybeExpression[]
 ): Ast.Calc {
   const resolvedItems: ["*" | "/", Ast.CalcValue][] = [];
-  function handleItem(item: AnyMaybeExpression) {
+  function handleItem(item: AnyMaybeExpression, isFirst: boolean) {
     if (!item) {
       return;
     }
@@ -117,12 +117,24 @@ export function multiplyOrDivide(
       return;
     }
     if (item.kind === "calc-product") {
-      // Merge calc sum;
+      // Only flatten calc-products when safe to do so:
+      // - Always safe to flatten the first item
+      // - Never flatten when dividing (op is '/') on non-first items to preserve precedence
+      // - Only flatten when multiplying (op is '*') non-first items if the product contains only multiplication
       const [first, rest] = item.value;
-      resolvedItems.push([op, first]);
-      rest.forEach(([op, val]) => {
-        resolvedItems.push([op.value, val]);
-      });
+      const canFlatten = isFirst ||
+        (op === "*" && rest.every(([innerOp]) => innerOp.value === "*"));
+
+      if (canFlatten) {
+        // Safe to flatten: merge the operations
+        resolvedItems.push([op, first]);
+        rest.forEach(([op, val]) => {
+          resolvedItems.push([op.value, val]);
+        });
+      } else {
+        // Cannot flatten: wrap in group to preserve precedence
+        resolvedItems.push([op, create.calcValue.group(create.clacSum(item))]);
+      }
       return;
     }
     if (item.kind === "calc-sum") {
@@ -130,13 +142,13 @@ export function multiplyOrDivide(
       return;
     }
     if (item.kind === "calc") {
-      handleItem(item.value[2]);
+      handleItem(item.value[2], isFirst);
       return;
     }
     resolvedItems.push([op, item]);
   }
-  for (const item of items) {
-    handleItem(item);
+  for (let i = 0; i < items.length; i++) {
+    handleItem(items[i], i === 0);
   }
   const first = resolvedItems.shift();
   if (!first) {
