@@ -205,6 +205,16 @@ const expr = multiply(add(10, 20), 2);
 const css = serialize(expr); // "calc((10 + 20)*2)"
 ```
 
+### `maybeSerialize(expression)`
+
+Serializes an expression when it is defined. Returns `undefined` for `null` or
+`undefined` inputs.
+
+```typescript
+const css = maybeSerialize(add("10px", "5px")); // "calc(10px + 5px)"
+const optionalCss = maybeSerialize(undefined); // undefined
+```
+
 ## Scope
 
 This library currently includes only the CSS functions and features that I

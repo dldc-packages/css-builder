@@ -52,3 +52,18 @@ export function serialize(node: AnyAstNode): string {
 
   return output;
 }
+
+/**
+ * Serializes an AST node when present.
+ * Returns undefined for nullish inputs, which is useful for optional CSS values.
+ * @param node - The AST node to serialize, or null/undefined
+ * @returns The serialized CSS string, or undefined when node is not provided
+ */
+export function maybeSerialize(
+  node: AnyAstNode | null | undefined,
+): string | undefined {
+  if (!node) {
+    return undefined;
+  }
+  return serialize(node);
+}

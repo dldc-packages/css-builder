@@ -1,7 +1,7 @@
 import { expect } from "@std/expect";
 
 import * as create from "../src/create.ts";
-import { serialize } from "../src/serialize.ts";
+import { maybeSerialize, serialize } from "../src/serialize.ts";
 
 Deno.test("calcValue", async (t) => {
   await t.step("number", async (t) => {
@@ -306,6 +306,21 @@ Deno.test("round", async (t) => {
     const value = create.calcValue.dimension(12, "px");
     const result = create.round("down", value);
     expect(serialize(result)).toBe("round(down,12px)");
+  });
+});
+
+Deno.test("maybeSerialize", async (t) => {
+  await t.step("returns undefined for undefined", () => {
+    expect(maybeSerialize(undefined)).toBeUndefined();
+  });
+
+  await t.step("returns undefined for null", () => {
+    expect(maybeSerialize(null)).toBeUndefined();
+  });
+
+  await t.step("serializes when value is provided", () => {
+    const value = create.calcValue.dimension(10, "px");
+    expect(maybeSerialize(value)).toBe("10px");
   });
 });
 
