@@ -111,6 +111,61 @@ serialize(pow(2, 3)); // "pow(2,3)"
 serialize(pow("var(--base)", "2")); // "pow(var(--base),2)"
 ```
 
+#### `var(name, fallback?)`
+
+Creates a `var()` expression for CSS custom properties.
+
+```typescript
+import { add, var as cssVar } from "@dldc/css-builder";
+
+serialize(cssVar("--space")); // "var(--space)"
+serialize(cssVar("--gutter", add("8px", 2))); // "var(--gutter,8px + 2)"
+```
+
+#### `number(value)`
+
+Creates a numeric calc value.
+
+```typescript
+serialize(number(42)); // "42"
+serialize(number("3.14")); // "3.14"
+```
+
+#### `dimension(value, unit)`
+
+Creates a dimension calc value.
+
+```typescript
+serialize(dimension(10, "px")); // "10px"
+serialize(dimension("1.5", "rem")); // "1.5rem"
+```
+
+#### `percentage(value)`
+
+Creates a percentage calc value.
+
+```typescript
+serialize(percentage(50)); // "50%"
+serialize(percentage("12.5")); // "12.5%"
+```
+
+#### `raw(value)`
+
+Creates a raw calc value (no parsing).
+
+```typescript
+serialize(raw("var(--size)")); // "var(--size)"
+```
+
+#### `group(value)`
+
+Wraps a value or sum in parentheses, useful for preserving precedence in
+composed expressions.
+
+```typescript
+serialize(group(value("10px"))); // "(10px)"
+```
+
 #### `round(...)`
 
 Creates a `round()` expression. You can pass a rounding strategy as the first

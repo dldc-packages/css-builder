@@ -404,3 +404,64 @@ export function value(value: string | number): Ast.CalcValue {
   }
   return create.calcValue.dimension(numberPart, unit);
 }
+
+/**
+ * Creates a CSS var() function expression.
+ * @param name - The custom property name (for example, '--spacing')
+ * @param fallback - Optional fallback value if the custom property is not defined
+ * @returns A Var AST node representing var(name[, fallback])
+ */
+function variable(name: string, fallback?: AnyExpression): Ast.Var {
+  return create.calcValue.var(
+    name,
+    fallback ? anyExprToCalcSum(fallback) : undefined,
+  );
+}
+
+export { variable as var };
+
+/**
+ * Creates a numeric CalcValue node.
+ * @param value - A number or numeric string
+ * @returns A CalcValue number node
+ */
+export function number(value: number | string): Ast.CalcValue {
+  return create.calcValue.number(value);
+}
+
+/**
+ * Creates a dimension CalcValue node.
+ * @param value - A number or numeric string
+ * @param unit - The dimension unit (for example, 'px', 'rem', 'vw')
+ * @returns A CalcValue dimension node
+ */
+export function dimension(value: number | string, unit: string): Ast.CalcValue {
+  return create.calcValue.dimension(value, unit);
+}
+
+/**
+ * Creates a percentage CalcValue node.
+ * @param value - A number or numeric string
+ * @returns A CalcValue percentage node
+ */
+export function percentage(value: number | string): Ast.CalcValue {
+  return create.calcValue.percentage(value);
+}
+
+/**
+ * Creates a raw/unprocessed CalcValue node.
+ * @param value - Raw CSS text to embed directly
+ * @returns A raw CalcValue node
+ */
+export function raw(value: string): Ast.CalcValue {
+  return create.calcValue.raw(value);
+}
+
+/**
+ * Groups a CalcSum in parentheses to preserve precedence.
+ * @param value - The CalcSum to group
+ * @returns A grouped CalcValue node
+ */
+export function group(value: Ast.CalcSum): Ast.CalcValue {
+  return create.calcValue.group(value);
+}

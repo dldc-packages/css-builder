@@ -238,7 +238,7 @@ export type CalcValueCreators = {
   /** Creates a raw/unprocessed CalcValue */
   raw(value: string): Ast.CalcValue;
   /** Creates a var() custom property CalcValue */
-  var(name: string, fallback?: Ast.CalcSum): Ast.CalcValue;
+  var(name: string, fallback?: Ast.CalcSum): Ast.Var;
 };
 
 /**
@@ -295,7 +295,7 @@ export const calcValue: CalcValueCreators = {
     };
   },
   /** @param name The custom property name (e.g., '--my-var') @param fallback Optional fallback value */
-  var(name: string, fallback?: Ast.CalcSum): Ast.CalcValue {
+  var(name: string, fallback?: Ast.CalcSum): Ast.Var {
     return {
       kind: "var",
       value: [

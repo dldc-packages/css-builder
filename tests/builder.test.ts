@@ -428,3 +428,70 @@ Deno.test("value", async (t) => {
     expect(serialize(builder.value("var(--size)"))).toBe("var(--size)");
   });
 });
+
+Deno.test("var", async (t) => {
+  await t.step("creates var without fallback", () => {
+    const result = builder.var("--space");
+    expect(serialize(result)).toBe("var(--space)");
+  });
+
+  await t.step("creates var with primitive fallback", () => {
+    const result = builder.var("--gutter", "10px");
+    expect(serialize(result)).toBe("var(--gutter,10px)");
+  });
+
+  await t.step("creates var with calc fallback", () => {
+    const result = builder.var("--size", builder.add("8px", 2));
+    expect(serialize(result)).toBe("var(--size,8px + 2)");
+  });
+});
+
+Deno.test("number", async (t) => {
+  await t.step("creates number from numeric value", () => {
+    expect(serialize(builder.number(42))).toBe("42");
+  });
+
+  await t.step("creates number from string value", () => {
+    expect(serialize(builder.number("3.14"))).toBe("3.14");
+  });
+});
+
+Deno.test("dimension", async (t) => {
+  await t.step("creates dimension from numeric value", () => {
+    expect(serialize(builder.dimension(10, "px"))).toBe("10px");
+  });
+
+  await t.step("creates dimension from string value", () => {
+    expect(serialize(builder.dimension("1.5", "rem"))).toBe("1.5rem");
+  });
+});
+
+Deno.test("percentage", async (t) => {
+  await t.step("creates percentage from numeric value", () => {
+    expect(serialize(builder.percentage(50))).toBe("50%");
+  });
+
+  await t.step("creates percentage from string value", () => {
+    expect(serialize(builder.percentage("12.5"))).toBe("12.5%");
+  });
+});
+
+Deno.test("raw", async (t) => {
+  await t.step("creates raw value", () => {
+    expect(serialize(builder.raw("var(--size)"))).toBe("var(--size)");
+  });
+});
+
+Deno.test("group", async (t) => {
+  await t.step("groups a value", () => {
+    expect(serialize(builder.group(builder.value("10px")))).toBe("(10px)");
+  });
+
+  await t.step("groups a calc sum", () => {
+    const sum = create.calcSum(builder.value("10px"), [
+      "+",
+      builder.value("5px"),
+    ]);
+    expect(serialize(builder.group(sum))).toBe("(10px + 5px)");
+  });
+});
