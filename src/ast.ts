@@ -12,6 +12,8 @@
  * - `value`: The node's content (string token, child nodes, or arrays thereof)
  */
 
+import { IS_AST } from "./internal.ts";
+
 /**
  * Syntax helper for one or more items ('+' in CSS spec).
  * Represents a sequence of one required item followed by zero or more additional items.
@@ -49,6 +51,7 @@ export type Syntax_QuestionMark<T> = T | null;
  * @example min(100px, 50%)
  */
 export type Min = {
+  readonly [IS_AST]: true;
   readonly kind: "min";
   readonly value: [
     { readonly kind: "function"; readonly value: "min" },
@@ -64,6 +67,7 @@ export type Min = {
  * @example max(100px, 50%)
  */
 export type Max = {
+  readonly [IS_AST]: true;
   readonly kind: "max";
   readonly value: [
     { readonly kind: "function"; readonly value: "max" },
@@ -81,6 +85,7 @@ export type Max = {
  * @example clamp(10px, 100%, 500px)
  */
 export type Clamp = {
+  readonly [IS_AST]: true;
   readonly kind: "clamp";
   readonly value: [
     { readonly kind: "function"; readonly value: "clamp" },
@@ -101,6 +106,7 @@ export type Clamp = {
  * @example var(--my-color, blue)
  */
 export type Var = {
+  readonly [IS_AST]: true;
   readonly kind: "var";
   readonly value: readonly [
     { readonly kind: "function"; readonly value: "var" },
@@ -120,6 +126,7 @@ export type Var = {
  * @example calc(100px + 2 * 20px)
  */
 export type Calc = {
+  readonly [IS_AST]: true;
   readonly kind: "calc";
   readonly value: [
     { readonly kind: "function"; readonly value: "calc" },
@@ -135,6 +142,7 @@ export type Calc = {
  * @example exp(1)
  */
 export type Exp = {
+  readonly [IS_AST]: true;
   readonly kind: "exp";
   readonly value: [
     { readonly kind: "function"; readonly value: "exp" },
@@ -150,6 +158,7 @@ export type Exp = {
  * @example pow(2, 3)
  */
 export type Pow = {
+  readonly [IS_AST]: true;
   readonly kind: "pow";
   readonly value: [
     { readonly kind: "function"; readonly value: "pow" },
@@ -177,6 +186,7 @@ export type RoundStrategy = "nearest" | "up" | "down" | "to-zero";
  * @example round(nearest, 5.5, 1) // rounds 5.5 to nearest 1 = 6
  */
 export type Round = {
+  readonly [IS_AST]: true;
   readonly kind: "round";
   readonly value: [
     { readonly kind: "function"; readonly value: "round" },
@@ -203,6 +213,7 @@ export type Round = {
 export type CalcSum =
   | CalcProduct
   | {
+    readonly [IS_AST]: true;
     readonly kind: "calc-sum";
     readonly value: readonly [
       CalcProduct,
@@ -220,6 +231,7 @@ export type CalcSum =
 export type CalcProduct =
   | CalcValue
   | {
+    readonly [IS_AST]: true;
     readonly kind: "calc-product";
     readonly value: readonly [
       CalcValue,
@@ -237,10 +249,12 @@ export type CalcProduct =
  */
 export type CalcValue =
   | {
+    readonly [IS_AST]: true;
     readonly kind: "number";
     readonly value: string;
   }
   | {
+    readonly [IS_AST]: true;
     readonly kind: "dimension";
     readonly value: readonly [
       { readonly kind: "dimension-number"; readonly value: string },
@@ -248,6 +262,7 @@ export type CalcValue =
     ];
   }
   | {
+    readonly [IS_AST]: true;
     readonly kind: "percentage";
     readonly value: [
       { readonly kind: "percentage-number"; readonly value: string },
@@ -255,14 +270,17 @@ export type CalcValue =
     ];
   }
   | {
+    readonly [IS_AST]: true;
     readonly kind: "keyword";
     readonly value: CalcKeyword;
   }
   | {
+    readonly [IS_AST]: true;
     readonly kind: "raw";
     readonly value: string;
   }
   | {
+    readonly [IS_AST]: true;
     readonly kind: "group";
     readonly value: readonly [
       { readonly kind: "token"; readonly value: "(" },
@@ -279,6 +297,19 @@ export type CalcValue =
   | Round
   | Var;
 
+export type AstNode =
+  | Min
+  | Max
+  | Clamp
+  | Var
+  | Calc
+  | Exp
+  | Pow
+  | Round
+  | CalcSum
+  | CalcProduct
+  | CalcValue;
+
 /**
  * CSS math constants that can be used in calc() expressions.
  * - 'e': Euler's number (~2.718)
@@ -288,3 +319,14 @@ export type CalcValue =
  * - 'NaN': Not a Number
  */
 export type CalcKeyword = "e" | "pi" | "infinity" | "-infinity" | "NaN";
+
+/**
+ * Checks if a given node is an AST node.
+ *
+ * @param node The node to check
+ * @returns True if the node is an AST node, false otherwise
+ */
+export function isAst(node: unknown): node is AstNode {
+  return typeof node === "object" && node !== null &&
+    (node as any)[IS_AST] === true;
+}

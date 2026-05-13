@@ -1,19 +1,20 @@
 import { expect } from "@std/expect";
 
 import * as create from "../src/create.ts";
+import { IS_AST } from "../src/internal.ts";
 import { maybeSerialize, serialize } from "../src/serialize.ts";
 
 Deno.test("calcValue", async (t) => {
   await t.step("number", async (t) => {
     await t.step("creates number from numeric value", () => {
       const result = create.calcValue.number(42);
-      expect(result).toEqual({ kind: "number", value: "42" });
+      expect(result).toEqual({ [IS_AST]: true, kind: "number", value: "42" });
       expect(serialize(result)).toBe("42");
     });
 
     await t.step("creates number from string value", () => {
       const result = create.calcValue.number("3.14");
-      expect(result).toEqual({ kind: "number", value: "3.14" });
+      expect(result).toEqual({ [IS_AST]: true, kind: "number", value: "3.14" });
       expect(serialize(result)).toBe("3.14");
     });
   });
@@ -22,6 +23,7 @@ Deno.test("calcValue", async (t) => {
     await t.step("creates dimension with px unit", () => {
       const result = create.calcValue.dimension(100, "px");
       expect(result).toEqual({
+        [IS_AST]: true,
         kind: "dimension",
         value: [
           { kind: "dimension-number", value: "100" },
@@ -46,6 +48,7 @@ Deno.test("calcValue", async (t) => {
     await t.step("creates percentage from numeric value", () => {
       const result = create.calcValue.percentage(50);
       expect(result).toEqual({
+        [IS_AST]: true,
         kind: "percentage",
         value: [
           { kind: "percentage-number", value: "50" },
@@ -64,7 +67,7 @@ Deno.test("calcValue", async (t) => {
   await t.step("keyword", async (t) => {
     await t.step("creates keyword with e", () => {
       const result = create.calcValue.keyword("e");
-      expect(result).toEqual({ kind: "keyword", value: "e" });
+      expect(result).toEqual({ [IS_AST]: true, kind: "keyword", value: "e" });
       expect(serialize(result)).toBe("e");
     });
 
@@ -111,6 +114,7 @@ Deno.test("calcValue", async (t) => {
     await t.step("creates var without fallback", () => {
       const result = create.calcValue.var("--size");
       expect(result).toEqual({
+        [IS_AST]: true,
         kind: "var",
         value: [
           { kind: "function", value: "var" },
@@ -226,6 +230,7 @@ Deno.test("calc", async (t) => {
     const sum = create.calcValue.number(42);
     const result = create.calc(sum);
     expect(result).toEqual({
+      [IS_AST]: true,
       kind: "calc",
       value: [
         { kind: "function", value: "calc" },
@@ -265,6 +270,7 @@ Deno.test("exp", async (t) => {
     const sum = create.calcValue.number(2);
     const result = create.exp(sum);
     expect(result).toEqual({
+      [IS_AST]: true,
       kind: "exp",
       value: [
         { kind: "function", value: "exp" },
@@ -390,6 +396,7 @@ Deno.test("clamp", async (t) => {
     const max = create.calcValue.dimension(800, "px");
     const result = create.clamp(min, preferred, max);
     expect(result).toEqual({
+      [IS_AST]: true,
       kind: "clamp",
       value: [
         { kind: "function", value: "clamp" },

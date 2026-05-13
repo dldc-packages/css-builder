@@ -14,6 +14,7 @@
  */
 
 import type * as Ast from "./ast.ts";
+import { IS_AST } from "./internal.ts";
 
 /**
  * Type representing a tuple with at least one item.
@@ -29,6 +30,7 @@ export type OneOrMore<T> = readonly [T, ...(readonly T[])];
 export function min(...items: OneOrMore<Ast.CalcSum>): Ast.Min {
   const [first, ...rest] = items;
   return {
+    [IS_AST]: true,
     kind: "min",
     value: [
       { kind: "function", value: "min" },
@@ -50,6 +52,7 @@ export function min(...items: OneOrMore<Ast.CalcSum>): Ast.Min {
 export function max(...items: OneOrMore<Ast.CalcSum>): Ast.Max {
   const [first, ...rest] = items;
   return {
+    [IS_AST]: true,
     kind: "max",
     value: [
       { kind: "function", value: "max" },
@@ -76,6 +79,7 @@ export function clamp(
   max: Ast.CalcSum | { kind: "keyword"; value: "none" },
 ): Ast.Clamp {
   return {
+    [IS_AST]: true,
     kind: "clamp",
     value: [
       { kind: "function", value: "clamp" },
@@ -97,6 +101,7 @@ export function clamp(
  */
 export function calc(sum: Ast.CalcSum): Ast.Calc {
   return {
+    [IS_AST]: true,
     kind: "calc",
     value: [
       { kind: "function", value: "calc" },
@@ -114,6 +119,7 @@ export function calc(sum: Ast.CalcSum): Ast.Calc {
  */
 export function exp(sum: Ast.CalcSum): Ast.Exp {
   return {
+    [IS_AST]: true,
     kind: "exp",
     value: [
       { kind: "function", value: "exp" },
@@ -132,6 +138,7 @@ export function exp(sum: Ast.CalcSum): Ast.Exp {
  */
 export function pow(base: Ast.CalcSum, exponent: Ast.CalcSum): Ast.Pow {
   return {
+    [IS_AST]: true,
     kind: "pow",
     value: [
       { kind: "function", value: "pow" },
@@ -157,6 +164,7 @@ export function round(
   interval?: Ast.CalcSum,
 ): Ast.Round {
   return {
+    [IS_AST]: true,
     kind: "round",
     value: [
       { kind: "function", value: "round" },
@@ -187,6 +195,7 @@ export function calcSum(
     return first;
   }
   return {
+    [IS_AST]: true,
     kind: "calc-sum",
     value: [
       first,
@@ -211,6 +220,7 @@ export function calcProduct(
     return first;
   }
   return {
+    [IS_AST]: true,
     kind: "calc-product",
     value: [
       first,
@@ -248,11 +258,12 @@ export type CalcValueCreators = {
 export const calcValue: CalcValueCreators = {
   /** @param value The numeric value */
   number(value: number | string): Ast.CalcValue {
-    return { kind: "number", value: value.toString() };
+    return { [IS_AST]: true, kind: "number", value: value.toString() };
   },
   /** @param value The numeric value @param unit The unit (px, em, rem, etc.) */
   dimension(value: number | string, unit: string): Ast.CalcValue {
     return {
+      [IS_AST]: true,
       kind: "dimension",
       value: [
         { kind: "dimension-number", value: value.toString() },
@@ -263,6 +274,7 @@ export const calcValue: CalcValueCreators = {
   /** @param value The numeric value */
   percentage(value: number | string): Ast.CalcValue {
     return {
+      [IS_AST]: true,
       kind: "percentage",
       value: [
         { kind: "percentage-number", value: value.toString() },
@@ -273,6 +285,7 @@ export const calcValue: CalcValueCreators = {
   /** @param value A CSS keyword constant (e, pi, infinity, NaN) */
   keyword(value: Ast.CalcKeyword): Ast.CalcValue {
     return {
+      [IS_AST]: true,
       kind: "keyword",
       value,
     };
@@ -280,6 +293,7 @@ export const calcValue: CalcValueCreators = {
   /** @param value A calc sum expression to group */
   group(value: Ast.CalcSum): Ast.CalcValue {
     return {
+      [IS_AST]: true,
       kind: "group",
       value: [{ kind: "token", value: "(" }, value, {
         kind: "token",
@@ -290,6 +304,7 @@ export const calcValue: CalcValueCreators = {
   /** @param value A raw CSS string */
   raw(value: string): Ast.CalcValue {
     return {
+      [IS_AST]: true,
       kind: "raw",
       value,
     };
@@ -297,6 +312,7 @@ export const calcValue: CalcValueCreators = {
   /** @param name The custom property name (e.g., '--my-var') @param fallback Optional fallback value */
   var(name: string, fallback?: Ast.CalcSum): Ast.Var {
     return {
+      [IS_AST]: true,
       kind: "var",
       value: [
         { kind: "function", value: "var" },
