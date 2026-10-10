@@ -33,10 +33,7 @@ export type Syntax_Asterisk<T> = readonly T[];
  */
 export type Syntax_HashMark<T> = readonly [
   T,
-  ...(readonly (readonly [
-    { readonly kind: "token"; readonly value: "," },
-    T,
-  ])[]),
+  ...(readonly (readonly [{ readonly kind: "token"; readonly value: "," }, T])[]),
 ];
 /**
  * Syntax helper for optional items ('?' in CSS spec).
@@ -112,9 +109,7 @@ export type Var = {
     { readonly kind: "function"; readonly value: "var" },
     { readonly kind: "token"; readonly value: "(" },
     { readonly kind: "custom-property"; readonly value: string },
-    Syntax_QuestionMark<
-      readonly [{ readonly kind: "token"; readonly value: "," }, CalcSum]
-    >,
+    Syntax_QuestionMark<readonly [{ readonly kind: "token"; readonly value: "," }, CalcSum]>,
     { readonly kind: "token"; readonly value: ")" },
   ];
 };
@@ -198,9 +193,7 @@ export type Round = {
       ]
     >,
     CalcSum,
-    Syntax_QuestionMark<
-      readonly [{ readonly kind: "token"; readonly value: "," }, CalcSum]
-    >,
+    Syntax_QuestionMark<readonly [{ readonly kind: "token"; readonly value: "," }, CalcSum]>,
     { readonly kind: "token"; readonly value: ")" },
   ];
 };
@@ -213,15 +206,13 @@ export type Round = {
 export type CalcSum =
   | CalcProduct
   | {
-    readonly [IS_AST]: true;
-    readonly kind: "calc-sum";
-    readonly value: readonly [
-      CalcProduct,
-      Syntax_Asterisk<
-        [{ readonly kind: "token"; readonly value: " + " | " - " }, CalcProduct]
-      >,
-    ];
-  };
+      readonly [IS_AST]: true;
+      readonly kind: "calc-sum";
+      readonly value: readonly [
+        CalcProduct,
+        Syntax_Asterisk<[{ readonly kind: "token"; readonly value: " + " | " - " }, CalcProduct]>,
+      ];
+    };
 
 /**
  * AST node representing a multiplication or division expression within calc().
@@ -231,15 +222,13 @@ export type CalcSum =
 export type CalcProduct =
   | CalcValue
   | {
-    readonly [IS_AST]: true;
-    readonly kind: "calc-product";
-    readonly value: readonly [
-      CalcValue,
-      Syntax_Asterisk<
-        [{ readonly kind: "token"; readonly value: "*" | "/" }, CalcValue]
-      >,
-    ];
-  };
+      readonly [IS_AST]: true;
+      readonly kind: "calc-product";
+      readonly value: readonly [
+        CalcValue,
+        Syntax_Asterisk<[{ readonly kind: "token"; readonly value: "*" | "/" }, CalcValue]>,
+      ];
+    };
 
 /**
  * AST node representing a value within a calc() expression.
@@ -249,45 +238,45 @@ export type CalcProduct =
  */
 export type CalcValue =
   | {
-    readonly [IS_AST]: true;
-    readonly kind: "number";
-    readonly value: string;
-  }
+      readonly [IS_AST]: true;
+      readonly kind: "number";
+      readonly value: string;
+    }
   | {
-    readonly [IS_AST]: true;
-    readonly kind: "dimension";
-    readonly value: readonly [
-      { readonly kind: "dimension-number"; readonly value: string },
-      { readonly kind: "dimension-unit"; readonly value: string },
-    ];
-  }
+      readonly [IS_AST]: true;
+      readonly kind: "dimension";
+      readonly value: readonly [
+        { readonly kind: "dimension-number"; readonly value: string },
+        { readonly kind: "dimension-unit"; readonly value: string },
+      ];
+    }
   | {
-    readonly [IS_AST]: true;
-    readonly kind: "percentage";
-    readonly value: [
-      { readonly kind: "percentage-number"; readonly value: string },
-      { readonly kind: "token"; readonly value: "%" },
-    ];
-  }
+      readonly [IS_AST]: true;
+      readonly kind: "percentage";
+      readonly value: [
+        { readonly kind: "percentage-number"; readonly value: string },
+        { readonly kind: "token"; readonly value: "%" },
+      ];
+    }
   | {
-    readonly [IS_AST]: true;
-    readonly kind: "keyword";
-    readonly value: CalcKeyword;
-  }
+      readonly [IS_AST]: true;
+      readonly kind: "keyword";
+      readonly value: CalcKeyword;
+    }
   | {
-    readonly [IS_AST]: true;
-    readonly kind: "raw";
-    readonly value: string;
-  }
+      readonly [IS_AST]: true;
+      readonly kind: "raw";
+      readonly value: string;
+    }
   | {
-    readonly [IS_AST]: true;
-    readonly kind: "group";
-    readonly value: readonly [
-      { readonly kind: "token"; readonly value: "(" },
-      CalcSum,
-      { readonly kind: "token"; readonly value: ")" },
-    ];
-  }
+      readonly [IS_AST]: true;
+      readonly kind: "group";
+      readonly value: readonly [
+        { readonly kind: "token"; readonly value: "(" },
+        CalcSum,
+        { readonly kind: "token"; readonly value: ")" },
+      ];
+    }
   | Min
   | Max
   | Clamp
@@ -327,6 +316,5 @@ export type CalcKeyword = "e" | "pi" | "infinity" | "-infinity" | "NaN";
  * @returns True if the node is an AST node, false otherwise
  */
 export function isAst(node: unknown): node is AstNode {
-  return typeof node === "object" && node !== null &&
-    (node as any)[IS_AST] === true;
+  return typeof node === "object" && node !== null && (node as any)[IS_AST] === true;
 }

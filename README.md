@@ -5,7 +5,13 @@
 ## Installation
 
 ```bash
-deno add @dldc/css-builder
+npm install @dldc/css-builder
+```
+
+or with pnpm:
+
+```bash
+pnpm add @dldc/css-builder
 ```
 
 ## Usage

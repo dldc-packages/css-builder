@@ -31,10 +31,7 @@ export type AnyMaybeExpression = AnyExpression | null;
  * @param items - The items to add or subtract (can be numbers, strings, or calc expressions)
  * @returns A normalized Calc AST node
  */
-function addOrSubtract(
-  op: "+" | "-",
-  ...items: AnyMaybeExpression[]
-): Ast.Calc {
+function addOrSubtract(op: "+" | "-", ...items: AnyMaybeExpression[]): Ast.Calc {
   const resolvedItems: ["+" | "-", Ast.CalcProduct][] = [];
   const outerOp = op;
   function handleItem(item: AnyMaybeExpression) {
@@ -52,9 +49,7 @@ function addOrSubtract(
       resolvedItems.push([outerOp, first]);
       rest.forEach(([op, val]) => {
         const nextOp = op.value === " + " ? "+" : "-";
-        const mergedOp = outerOp === "-" && !isFirst
-          ? (nextOp === "+" ? "-" : "+")
-          : nextOp;
+        const mergedOp = outerOp === "-" && !isFirst ? (nextOp === "+" ? "-" : "+") : nextOp;
         resolvedItems.push([mergedOp, val]);
       });
       return;
@@ -103,10 +98,7 @@ export function subtract(...items: AnyMaybeExpression[]): Ast.Calc {
  * @param items - The items to multiply or divide (can be numbers, strings, or calc expressions)
  * @returns A normalized Calc AST node
  */
-export function multiplyOrDivide(
-  op: "*" | "/",
-  ...items: AnyMaybeExpression[]
-): Ast.Calc {
+export function multiplyOrDivide(op: "*" | "/", ...items: AnyMaybeExpression[]): Ast.Calc {
   const resolvedItems: ["*" | "/", Ast.CalcValue][] = [];
   function handleItem(item: AnyMaybeExpression, isFirst: boolean) {
     if (!item) {
@@ -122,8 +114,8 @@ export function multiplyOrDivide(
       // - Never flatten when dividing (op is '/') on non-first items to preserve precedence
       // - Only flatten when multiplying (op is '*') non-first items if the product contains only multiplication
       const [first, rest] = item.value;
-      const canFlatten = isFirst ||
-        (op === "*" && rest.every(([innerOp]) => innerOp.value === "*"));
+      const canFlatten =
+        isFirst || (op === "*" && rest.every(([innerOp]) => innerOp.value === "*"));
 
       if (canFlatten) {
         // Safe to flatten: merge the operations
@@ -291,14 +283,8 @@ export function exp(item: AnyExpression): Ast.Exp {
  * @param exponent - The exponent value (number, string, or calc expression)
  * @returns A Pow AST node representing the pow() function
  */
-export function pow(
-  base: AnyExpression,
-  exponent: AnyExpression,
-): Ast.Pow {
-  return create.pow(
-    anyExprToCalcSum(base),
-    anyExprToCalcSum(exponent),
-  );
+export function pow(base: AnyExpression, exponent: AnyExpression): Ast.Pow {
+  return create.pow(anyExprToCalcSum(base), anyExprToCalcSum(exponent));
 }
 /**
  * Creates a CSS round() function expression.
@@ -331,10 +317,7 @@ export function round(
  * @param interval - Optional interval for rounding (number, string, or calc expression)
  * @returns A Round AST node with 'nearest' strategy
  */
-export function roundNearest(
-  value: AnyExpression,
-  interval?: AnyExpression,
-): Ast.Round {
+export function roundNearest(value: AnyExpression, interval?: AnyExpression): Ast.Round {
   return round("nearest", value, interval);
 }
 
@@ -345,10 +328,7 @@ export function roundNearest(
  * @param interval - Optional interval for rounding (number, string, or calc expression)
  * @returns A Round AST node with 'up' strategy
  */
-export function roundUp(
-  value: AnyExpression,
-  interval?: AnyExpression,
-): Ast.Round {
+export function roundUp(value: AnyExpression, interval?: AnyExpression): Ast.Round {
   return round("up", value, interval);
 }
 
@@ -359,10 +339,7 @@ export function roundUp(
  * @param interval - Optional interval for rounding (number, string, or calc expression)
  * @returns A Round AST node with 'down' strategy
  */
-export function roundDown(
-  value: AnyExpression,
-  interval?: AnyExpression,
-): Ast.Round {
+export function roundDown(value: AnyExpression, interval?: AnyExpression): Ast.Round {
   return round("down", value, interval);
 }
 
@@ -373,10 +350,7 @@ export function roundDown(
  * @param interval - Optional interval for rounding (number, string, or calc expression)
  * @returns A Round AST node with 'to-zero' strategy
  */
-export function roundToZero(
-  value: AnyExpression,
-  interval?: AnyExpression,
-): Ast.Round {
+export function roundToZero(value: AnyExpression, interval?: AnyExpression): Ast.Round {
   return round("to-zero", value, interval);
 }
 
@@ -412,10 +386,7 @@ export function value(value: string | number): Ast.CalcValue {
  * @returns A Var AST node representing var(name[, fallback])
  */
 function variable(name: string, fallback?: AnyExpression): Ast.Var {
-  return create.calcValue.var(
-    name,
-    fallback ? anyExprToCalcSum(fallback) : undefined,
-  );
+  return create.calcValue.var(name, fallback ? anyExprToCalcSum(fallback) : undefined);
 }
 
 export { variable as var };

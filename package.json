@@ -1,0 +1,76 @@
+{
+  "name": "@dldc/css-builder",
+  "version": "1.6.0",
+  "description": "A utility for building CSS expressions like calc, clamp, etc.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dldc-packages/css-builder.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "default": "./dist/index.mjs"
+    },
+    "./ast": {
+      "types": "./dist/ast.d.mts",
+      "default": "./dist/ast.mjs"
+    },
+    "./builder": {
+      "types": "./dist/builder.d.mts",
+      "default": "./dist/builder.mjs"
+    },
+    "./create": {
+      "types": "./dist/create.d.mts",
+      "default": "./dist/create.mjs"
+    },
+    "./serialize": {
+      "types": "./dist/serialize.d.mts",
+      "default": "./dist/serialize.mjs"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "scripts": {
+    "test": "vp test run",
+    "test:run": "vp test run",
+    "test:watch": "vp test",
+    "test:coverage": "vp test run --coverage",
+    "check": "vp check",
+    "format": "vp fmt",
+    "lint": "vp lint",
+    "pack": "vp pack",
+    "release:check": "vp check && vp test run && vp pack",
+    "release": "bumpp --execute \"npm run release:check\""
+  },
+  "devDependencies": {
+    "@arethetypeswrong/core": "^0.18.5",
+    "@types/node": "^26.6.5",
+    "@vitest/coverage-v8": "^5.0.3",
+    "bumpp": "^12.3.0",
+    "typescript": "^6.0.3",
+    "vite-plus": "^1.1.0"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.11.2",
+      "onFail": "warn"
+    },
+    "runtime": {
+      "name": "node",
+      "version": "26.11.1",
+      "onFail": "warn"
+    }
+  },
+  "engines": {
+    "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
+  }
+}

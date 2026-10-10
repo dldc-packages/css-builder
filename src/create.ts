@@ -35,10 +35,7 @@ export function min(...items: OneOrMore<Ast.CalcSum>): Ast.Min {
     value: [
       { kind: "function", value: "min" },
       { kind: "token", value: "(" },
-      [
-        first,
-        ...rest.map((item) => [{ kind: "token", value: "," }, item] as const),
-      ] as const,
+      [first, ...rest.map((item) => [{ kind: "token", value: "," }, item] as const)] as const,
       { kind: "token", value: ")" },
     ],
   };
@@ -57,10 +54,7 @@ export function max(...items: OneOrMore<Ast.CalcSum>): Ast.Max {
     value: [
       { kind: "function", value: "max" },
       { kind: "token", value: "(" },
-      [
-        first,
-        ...rest.map((item) => [{ kind: "token", value: "," }, item] as const),
-      ] as const,
+      [first, ...rest.map((item) => [{ kind: "token", value: "," }, item] as const)] as const,
       { kind: "token", value: ")" },
     ],
   };
@@ -170,10 +164,13 @@ export function round(
       { kind: "function", value: "round" },
       { kind: "token", value: "(" },
       strategy
-        ? ([{ kind: "rounding-strategy", value: strategy }, {
-          kind: "token",
-          value: ",",
-        }] as const)
+        ? ([
+            { kind: "rounding-strategy", value: strategy },
+            {
+              kind: "token",
+              value: ",",
+            },
+          ] as const)
         : null,
       value,
       interval ? ([{ kind: "token", value: "," }, interval] as const) : null,
@@ -199,8 +196,8 @@ export function calcSum(
     kind: "calc-sum",
     value: [
       first,
-      products.map(([operator, product]) =>
-        [{ kind: "token", value: ` ${operator} ` }, product] as const
+      products.map(
+        ([operator, product]) => [{ kind: "token", value: ` ${operator} ` }, product] as const,
       ),
     ] as const,
   };
@@ -224,9 +221,7 @@ export function calcProduct(
     kind: "calc-product",
     value: [
       first,
-      values.map(([operator, value]) =>
-        [{ kind: "token", value: operator }, value] as const
-      ),
+      values.map(([operator, value]) => [{ kind: "token", value: operator }, value] as const),
     ] as const,
   };
 }
@@ -295,10 +290,14 @@ export const calcValue: CalcValueCreators = {
     return {
       [IS_AST]: true,
       kind: "group",
-      value: [{ kind: "token", value: "(" }, value, {
-        kind: "token",
-        value: ")",
-      }],
+      value: [
+        { kind: "token", value: "(" },
+        value,
+        {
+          kind: "token",
+          value: ")",
+        },
+      ],
     };
   },
   /** @param value A raw CSS string */
