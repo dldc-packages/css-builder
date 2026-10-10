@@ -1,6 +1,6 @@
 {
   "name": "@dldc/css-builder",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "A utility for building CSS expressions like calc, clamp, etc.",
   "license": "MIT",
   "repository": {
